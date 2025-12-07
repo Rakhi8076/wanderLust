@@ -2,8 +2,6 @@ if(process.env.NODE_ENV != "production"){
     require('dotenv').config();
 }
 
-
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -25,6 +23,7 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 const dbUrl = process.env.ATLASDB_URL;
+
 main()
 .then(() =>{
     console.log("connected to DB");
@@ -101,12 +100,14 @@ app.use((req, res, next) => {
 //     let registeredUser = await User.register(fakeUser, "helloworld");
 //     res.send(registeredUser);
 // })
-
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-app.all("/{*splat}", (req, res, next) => {
+app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
 
@@ -115,6 +116,7 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("error.ejs", {message});
 });
 
-app.listen(8080, () =>{
-    console.log("server is listening to port 8080");
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () =>{
+    console.log(`server is listening to port ${PORT}`);
 });
