@@ -120,10 +120,10 @@
         <% } %>
 
         <hr/>
-        <% if(listing.reviews && listing.reviews.length > 0) { %>
+        <% if(listing.reviews.length > 0) { %>
         <div class="row">
           <p><b>All Reviews</b></p>
-          <% for (let review of (listing.reviews || [])) { %>
+          <% for (let review of listing.reviews) { %>
             <div class="card col-5 ms-3 mb-3">
               <div class="card-body">
                 <h5 class="card-title">@<%= review.author.username %></h5>
@@ -146,6 +146,7 @@
         </div>
         <% } %>
       </div>
+      <div id="map"></div>
     </div>
 </div>
 <!-- <script src="https://cdn.maptiler.com/maptiler-sdk-js/v3.8.0/maptiler-sdk.umd.js"></script>

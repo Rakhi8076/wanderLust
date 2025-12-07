@@ -2,6 +2,7 @@ if(process.env.NODE_ENV != "production"){
     require('dotenv').config();
 }
 
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -45,11 +46,9 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const store = MongoStore.create({
     mongoUrl: dbUrl,
-    crypto: {
-        secret: process.env.SESSION_SECRET,
-    },
     touchAfter: 24 * 3600
 });
+
 
 store.on("error", (err) => {
     console.log("ERROR in MONGO SESSION STORE", err);
@@ -59,7 +58,7 @@ const sessionOptions = {
         store: store,
         secret: process.env.SESSION_SECRET,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
         cookie: {
             expires: Date.now() + 7 * 24 * 60 * 60 *1000,
             maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -100,14 +99,12 @@ app.use((req, res, next) => {
 //     let registeredUser = await User.register(fakeUser, "helloworld");
 //     res.send(registeredUser);
 // })
-app.get("/", (req, res) => {
-  res.redirect("/listings");
-});
+
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-app.all("*", (req, res, next) => {
+app.all("/{*splat}", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
 
@@ -116,7 +113,6 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("error.ejs", {message});
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () =>{
-    console.log(`server is listening to port ${PORT}`);
+app.listen(8080, () =>{
+    console.log("server is listening to port 8080");
 });
